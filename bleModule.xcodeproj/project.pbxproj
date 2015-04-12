@@ -14,6 +14,7 @@
 		4661210A1ADAB73D00A10A49 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 466121091ADAB73D00A10A49 /* Images.xcassets */; };
 		4661210D1ADAB73D00A10A49 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 4661210B1ADAB73D00A10A49 /* LaunchScreen.xib */; };
 		466121191ADAB73D00A10A49 /* bleModuleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 466121181ADAB73D00A10A49 /* bleModuleTests.swift */; };
+		46F58C051ADAC49200C81B3F /* bleTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 46F58C041ADAC49200C81B3F /* bleTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,7 @@
 		466121121ADAB73D00A10A49 /* bleModuleTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = bleModuleTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		466121171ADAB73D00A10A49 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		466121181ADAB73D00A10A49 /* bleModuleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = bleModuleTests.swift; sourceTree = "<group>"; };
+		46F58C041ADAC49200C81B3F /* bleTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = bleTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,6 +84,7 @@
 				466120FF1ADAB73D00A10A49 /* AppDelegate.swift */,
 				466121041ADAB73D00A10A49 /* ViewController.swift */,
 				466121061ADAB73D00A10A49 /* Main.storyboard */,
+				46F58C041ADAC49200C81B3F /* bleTableViewController.swift */,
 				466121091ADAB73D00A10A49 /* Images.xcassets */,
 				4661210B1ADAB73D00A10A49 /* LaunchScreen.xib */,
 				466121011ADAB73D00A10A49 /* bleModule.xcdatamodeld */,
@@ -215,6 +218,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				46F58C051ADAC49200C81B3F /* bleTableViewController.swift in Sources */,
 				466121051ADAB73D00A10A49 /* ViewController.swift in Sources */,
 				466121001ADAB73D00A10A49 /* AppDelegate.swift in Sources */,
 				466121031ADAB73D00A10A49 /* bleModule.xcdatamodeld in Sources */,
@@ -415,6 +419,7 @@
 				4661211E1ADAB73D00A10A49 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		4661211F1ADAB73D00A10A49 /* Build configuration list for PBXNativeTarget "bleModuleTests" */ = {
 			isa = XCConfigurationList;
@@ -423,6 +428,7 @@
 				466121211ADAB73D00A10A49 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
