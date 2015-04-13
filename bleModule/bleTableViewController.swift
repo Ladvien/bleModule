@@ -91,15 +91,16 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
     }
     
     func peripheral(peripheral: CBPeripheral?, didDiscoverServices error: NSError!) {
+
         if let peripheral = peripheral{
-            // Iterate through the services of a particular peripheral.
-            if let peripheralDevice = peripheralDevice{
-                for service in peripheralDevice.services {
-                    let thisService = service as? CBService
-                    // Let's see what characteristics this service has.
-                    peripheralDevice.discoverCharacteristics(nil, forService: thisService)
+        // Iterate through the services of a particular peripheral.
+            for service in peripheral.services {
+                let thisService = service as? CBService
+                // Let's see what characteristics this service has.
+                if let thisService = thisService{
+                    peripheral.discoverCharacteristics(nil, forService: thisService)
                     if let navigationController = navigationController{
-                        navigationItem.title = "Discovered Service for \(deviceName)"
+                    navigationItem.title = "Discovered Service for \(deviceName)"
                     }
                 }
             }
@@ -116,20 +117,27 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
                 var enableValue = 1
                 let enablyBytes = NSData(bytes: &enableValue, length: sizeof(UInt8))
                 
+                
+                
                 // check the uuid of each characteristic to find config and data characteristics
                 for charateristic in service.characteristics {
-                    let thisCharacteristic = charateristic as? CBCharacteristic
-                    // Set notify for characteristics here.
+                    let thisCharacteristic = charateristic as! CBCharacteristic
+                        // Set notify for characteristics here.
+                
+                    peripheral.setNotifyValue(true, forCharacteristic: thisCharacteristic)
+                    println(thisCharacteristic)
+                    
+            
                     if let navigationController = navigationController{
                         navigationItem.title = "Discovered Characteristic for \(deviceName)"
                     }
                     deviceCharacteristics = thisCharacteristic
                 }
-
+                
                 writeValue("Blh")
                 // Now that we are setup, return to main view.
                 if let navigationController = navigationController{
-                    navigationController.popViewControllerAnimated(true)
+                    //navigationController.popViewControllerAnimated(true)
                 }
             }
         }
@@ -137,13 +145,7 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
     
     // Get data values when they are updated
     func peripheral(peripheral: CBPeripheral?, didUpdateValueForCharacteristic characteristic: CBCharacteristic?, error: NSError!) {
-        
-        if let peripheral = peripheral{
-            if let characteristic = characteristic{
-                // This function is run when data is received on a characteristic.
-
-            }
-        }
+        println("Got some!")
     }
     
     func cancelConnection(){
