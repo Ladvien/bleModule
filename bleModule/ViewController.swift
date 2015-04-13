@@ -11,9 +11,14 @@ import UIKit
 
 class ViewController: UIViewController {
 
+    @IBAction func sendButton(sender: AnyObject) {
+        bleTableViewController.writeValue("Blah")
+
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        bleTableViewController()
         // Do any additional setup after loading the view, typically from a nib.
         // Initialize central manager on load
     }
