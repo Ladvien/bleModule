@@ -13,16 +13,27 @@ var activeCentralManager: CBCentralManager?
 var peripheralDevice: CBPeripheral?
 var devices: Dictionary<NSUUID, CBPeripheral> = [:]
 var deviceName: String?
+var devicesRSSI = [NSNumber]()
+var devicesServices: CBService!
 var deviceCharacteristics: CBCharacteristic!
 
 class bleTableViewController: UITableViewController, CBCentralManagerDelegate, CBPeripheralDelegate, UITableViewDelegate, UITableViewDataSource {
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
-        // Initialize central manager on load
+    }
+    
+    override func viewDidAppear(animated: Bool) {
+        // Clear devices dictionary.
         devices.removeAll(keepCapacity: false)
-        println(devices)
+        devicesRSSI.removeAll(keepCapacity: false)
+        // Initialize central manager on load
         activeCentralManager = CBCentralManager(delegate: self, queue: nil)
+        
+        var refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: Selector("update"), forControlEvents: UIControlEvents.ValueChanged)
+        self.refreshControl = refreshControl
     }
     
     override func didReceiveMemoryWarning() {
@@ -30,6 +41,14 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
         // Dispose of any resources that can be recreated.
     }
     
+    func update(){
+        // Clear devices dictionary.
+        devices.removeAll(keepCapacity: false)
+        devicesRSSI.removeAll(keepCapacity: false)
+        // Initialize central manager on load
+        activeCentralManager = CBCentralManager(delegate: self, queue: nil)
+        self.refreshControl?.endRefreshing()
+    }
     
     // MARK: BLE
     
@@ -57,7 +76,7 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
                 let uuid = peripheral.identifier
                 // Add this discovered peripheral to the peripheral dictionary.
                 devices[uuid] = peripheral
-                
+                devicesRSSI.append(RSSI)
                 // Could create another Dictionary here, based on RSSI
                 // let devices[RSSI] = peripheral
                 // Might have a problem if two peripheral's have the same RSSI.
@@ -77,6 +96,7 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
     
     // Discover services of the peripheral
     func centralManager(central: CBCentralManager?, didConnectPeripheral peripheral: CBPeripheral?) {
+
         if let central = central{
             if let peripheral = peripheral{
                 // Discover services for the device.
@@ -88,6 +108,7 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
                 }
             }
         }
+        
     }
     
     func peripheral(peripheral: CBPeripheral?, didDiscoverServices error: NSError!) {
@@ -105,39 +126,28 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
                 }
             }
         }
+        
     }
     
     func peripheral(peripheral: CBPeripheral?, didDiscoverCharacteristicsForService service: CBService?, error: NSError?) {
        
         if let peripheral = peripheral{
+
             if let service = service{
-                // Check out her characteristics!
-                
-                // 0x01 data byte to enable sensor
-                var enableValue = 1
-                let enablyBytes = NSData(bytes: &enableValue, length: sizeof(UInt8))
-                
-                
-                
                 // check the uuid of each characteristic to find config and data characteristics
                 for charateristic in service.characteristics {
                     let thisCharacteristic = charateristic as! CBCharacteristic
-                        // Set notify for characteristics here.
-                
+                    // Set notify for characteristics here.
                     peripheral.setNotifyValue(true, forCharacteristic: thisCharacteristic)
-                    println(thisCharacteristic)
-                    
-            
+
                     if let navigationController = navigationController{
                         navigationItem.title = "Discovered Characteristic for \(deviceName)"
                     }
                     deviceCharacteristics = thisCharacteristic
                 }
-                
-                writeValue("Blh")
                 // Now that we are setup, return to main view.
                 if let navigationController = navigationController{
-                    //navigationController.popViewControllerAnimated(true)
+                    navigationController.popViewControllerAnimated(true)
                 }
             }
         }
@@ -168,6 +178,15 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
         }
     }
     
+    func writeValue(data: String){
+        let data = (data as NSString).dataUsingEncoding(NSUTF8StringEncoding)
+        if let peripheralDevice = peripheralDevice{
+            if let deviceCharacteristics = deviceCharacteristics{
+                peripheralDevice.writeValue(data, forCharacteristic: deviceCharacteristics, type: CBCharacteristicWriteType.WithoutResponse)
+            }
+        }
+    }
+    
 // MARK: TableView
     
     override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -180,12 +199,14 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
         let cell = tableView.dequeueReusableCellWithIdentifier("cell") as? UITableViewCell
         // Turn the device dictionary into an array.
         let discoveredPeripheralArray = devices.values.array
+        
         // Set the main label of the cell to the name of the corresponding peripheral.
         if let cell = cell{
-            cell.textLabel?.text = discoveredPeripheralArray[indexPath.row].name
+            let name = discoveredPeripheralArray[indexPath.row].name!
+            cell.textLabel?.text = name
+            cell.detailTextLabel?.text = devicesRSSI[indexPath.row].stringValue
         }
 
-        
         return cell!
     }
     
@@ -196,12 +217,8 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
             // Get an array of peripherals.
             let discoveredPeripheralArray = devices.values.array
             
-            println(discoveredPeripheralArray[indexPath.row].name)
-            
             // Set the peripheralDevice to the corresponding row selected.
-            //activeCentralManager.cancelPeripheralConnection(peripheralDevice)
             peripheralDevice = discoveredPeripheralArray[indexPath.row]
-            
             
             // Attach the peripheral delegate.
             if let peripheralDevice = peripheralDevice{
@@ -225,26 +242,6 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
         }
     }
     
-    func writeValue(data: String){
-        let data = (data as NSString).dataUsingEncoding(NSUTF8StringEncoding)
-        if let peripheralDevice = peripheralDevice{
-            if let deviceCharacteristics = deviceCharacteristics{
-                peripheralDevice.writeValue(data, forCharacteristic: deviceCharacteristics, type: CBCharacteristicWriteType.WithoutResponse)
-                println("Wrote 2")
-            }
-            
-        }
-    }
-    
-    class func writeValue(data: String){
-        let data = (data as NSString).dataUsingEncoding(NSUTF8StringEncoding)
-        if let peripheralDevice = peripheralDevice{
-            if let deviceCharacteristics = deviceCharacteristics{
-                peripheralDevice.writeValue(data, forCharacteristic: deviceCharacteristics, type: CBCharacteristicWriteType.WithoutResponse)
-                println("Wrote 2")
-            }
-            
-        }
-    }
+
     
 }
