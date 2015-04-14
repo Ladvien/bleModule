@@ -32,7 +32,6 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
             peripheralDevice.delegate = self
         }
         
-        var timer = NSTimer.scheduledTimerWithTimeInterval(0.4, target: self, selector: Selector("update"), userInfo: nil, repeats: true)
     }
     
     override func didReceiveMemoryWarning() {
@@ -52,21 +51,7 @@ class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDe
         }
         
     }
-    
-    func update(){
-        if let peripheralDevice = peripheralDevice{
-            peripheralDevice.readRSSI()
-        }
-        
-    }
-    
-    func peripheral(peripheral: CBPeripheral!, didReadRSSI RSSI: NSNumber!, error: NSError!) {
-        if(RSSI != nil){
-            println(RSSI)
-        }
-        
-    }
-    
+
     // Get data values when they are updated
     func peripheral(peripheral: CBPeripheral?, didUpdateValueForCharacteristic characteristic: CBCharacteristic?, error: NSError!) {
         

@@ -81,17 +81,6 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
                     }
 
                 }
-                // Could create another Dictionary here, based on RSSI
-                // let devices[RSSI] = peripheral
-                // Might have a problem if two peripheral's have the same RSSI.
-                
-                // Since we might have discovered another device, let's refresh the list.
-
-                
-                
-                //let deviceName = "HMSoft"
-                //let nameOfDeviceFound = (advertisementData as NSDictionary).objectForKey(CBAdvertisementDataLocalNameKey) as? NSString
-                //println(RSSI)
             }
         }
     }
