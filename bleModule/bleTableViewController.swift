@@ -11,7 +11,7 @@ import CoreBluetooth
 
 var activeCentralManager: CBCentralManager?
 var peripheralDevice: CBPeripheral?
-var devices: Dictionary<NSUUID, CBPeripheral> = [:]
+var devices: Dictionary<String, CBPeripheral> = [:]
 var deviceName: String?
 var devicesRSSI = [NSNumber]()
 var devicesServices: CBService!
@@ -73,16 +73,20 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
         if let central = central{
             if let peripheral = peripheral{
                 // Get this device's UUID.
-                let uuid = peripheral.identifier
-                // Add this discovered peripheral to the peripheral dictionary.
-                devices[uuid] = peripheral
-                devicesRSSI.append(RSSI)
+                if let name = peripheral.name{
+                    if(devices[name] == nil){
+                        devices[name] = peripheral
+                        devicesRSSI.append(RSSI)
+                        self.tableView.reloadData()
+                    }
+
+                }
                 // Could create another Dictionary here, based on RSSI
                 // let devices[RSSI] = peripheral
                 // Might have a problem if two peripheral's have the same RSSI.
                 
                 // Since we might have discovered another device, let's refresh the list.
-                self.tableView.reloadData()
+
                 
                 
                 //let deviceName = "HMSoft"
@@ -90,8 +94,6 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
                 //println(RSSI)
             }
         }
-        
-
     }
     
     // Discover services of the peripheral
@@ -199,14 +201,19 @@ class bleTableViewController: UITableViewController, CBCentralManagerDelegate, C
         let cell = tableView.dequeueReusableCellWithIdentifier("cell") as? UITableViewCell
         // Turn the device dictionary into an array.
         let discoveredPeripheralArray = devices.values.array
+        //println(discoveredPeripheralArray.count)
         
         // Set the main label of the cell to the name of the corresponding peripheral.
         if let cell = cell{
-            let name = discoveredPeripheralArray[indexPath.row].name!
-            cell.textLabel?.text = name
-            cell.detailTextLabel?.text = devicesRSSI[indexPath.row].stringValue
+            if let name = discoveredPeripheralArray[indexPath.row].name{
+                if let textLabelText = cell.textLabel{
+                    textLabelText.text = name
+                }
+                if let detailTextLabel = cell.detailTextLabel{
+                    detailTextLabel.text = devicesRSSI[indexPath.row].stringValue
+                }
+            }
         }
-
         return cell!
     }
     

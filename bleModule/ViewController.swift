@@ -12,9 +12,12 @@ import CoreBluetooth
 class ViewController: UIViewController, CBCentralManagerDelegate, CBPeripheralDelegate {
 
     @IBAction func sendButton(sender: AnyObject) {
-        writeValue("Blah")
-
+        if let text = sendTextField{
+            writeValue(sendTextField.text)
+        }
     }
+    
+    @IBOutlet weak var sendTextField: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
